@@ -1,0 +1,15 @@
+[qbt]
+host = "host"
+port = 6942
+username = "username"
+password = "password"
+
+[qbt_config]
+dl_limit = -1
+up_limit = -1
+
+[qbt_tags]
+tags = ["tag", "tag2"]
+
+[targets]
+dir_targets = { "tag" = "/home/lol", "tag2" = "/home/asd" }
