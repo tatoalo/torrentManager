@@ -1,12 +1,10 @@
-import logging
+from src import logging
 import os
 import sys
 
 import tomlkit
 
 from src import CONFIG_PATH
-
-logging.addLevelName(10, "DEBUG")
 
 
 class TorrentConfiguration:
@@ -19,7 +17,7 @@ class TorrentConfiguration:
         self.dl_limit = None
         self.up_limit = None
 
-        self.tags = []
+        self.categories = []
         self.dir_targets = {}
 
         self._load_configuration()
@@ -39,11 +37,11 @@ class TorrentConfiguration:
         dl_limit = -1
         up_limit = -1
 
-        [qbt_tags]
-        tags = ["tag", "tag2"]
+        [qbt_categories]
+        categories = ["cat", "cat2"]
 
         [targets]
-        dir_targets = { "tag" = "/home/lol", "tag2" = "/home/asd" }
+        dir_targets = { "cat" = "/home/lol", "cat2" = "/home/asd" }
         """
 
         if not os.path.exists(CONFIG_PATH):
@@ -70,8 +68,8 @@ class TorrentConfiguration:
                 case "qbt_config":
                     self.dl_limit = inner_section.get("dl_limit")
                     self.up_limit = inner_section.get("up_limit")
-                case "qbt_tags":
-                    self.tags = inner_section.get("tags")
+                case "qbt_categories":
+                    self.categories = inner_section.get("categories")
                 case "targets":
                     self.dir_targets = inner_section.get("dir_targets")
                 case _:

@@ -8,8 +8,8 @@ password = "password"
 dl_limit = -1
 up_limit = -1
 
-[qbt_tags]
-tags = ["tag", "tag2"]
+[qbt_categories]
+categories = ["cat", "cat2"]
 
 [targets]
-dir_targets = { "tag" = "/home/lol", "tag2" = "/home/asd" }
+dir_targets = { "cat" = "/home/lol", "cat2" = "/home/asd" }
