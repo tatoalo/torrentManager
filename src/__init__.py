@@ -3,7 +3,6 @@ import logging
 CONFIG_PATH = "configuration.toml"
 STORAGE_PATH = "data/"
 STORAGE_FILENAME = "storage"
-OPERATIONAL_PATH = "watchdog"
 
 logging.addLevelName(10, "DEBUG")
 logging.basicConfig(level=logging.DEBUG)
