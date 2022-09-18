@@ -4,6 +4,7 @@ port = 6942
 username = "username"
 password = "password"
 
+# B/s
 [qbt_config]
 dl_limit = -1
 up_limit = -1
@@ -12,4 +13,4 @@ up_limit = -1
 categories = ["cat", "cat2"]
 
 [targets]
-dir_targets = { "cat" = "/home/lol", "cat2" = "/home/asd" }
+dir_targets = { "cat" = "path", "cat2" = "path" }
