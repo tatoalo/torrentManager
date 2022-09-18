@@ -6,7 +6,7 @@ import sys
 import qbittorrentapi
 import qbittorrentapi.exceptions
 
-from src import STORAGE_FILENAME, STORAGE_PATH, logging
+from src import STORAGE_FILENAME, STORAGE_PATH, Limit, logging
 from torrent_configuration import TorrentConfiguration
 
 

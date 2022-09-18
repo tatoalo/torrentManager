@@ -1,6 +1,7 @@
 from torrent_manager import TorrentManager
 import atexit
 import sys
+from src import logging
 
 
 @atexit.register
