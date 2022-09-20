@@ -1,0 +1,16 @@
+[qbt]
+host = "host"
+port = 6942
+username = "username"
+password = "password"
+
+# B/s
+[qbt_config]
+dl_limit = -1
+up_limit = -1
+
+[qbt_categories]
+categories = ["cat", "cat2"]
+
+[targets]
+dir_targets = { "cat" = "path", "cat2" = "path" }

@@ -1,0 +1,2 @@
+qbittorrent-api==2022.8.38
+tomlkit==0.11.4
