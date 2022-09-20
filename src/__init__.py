@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 
-CONFIG_PATH = "configuration.toml"
+CONFIG_PATH = "/config/configuration.toml"
 STORAGE_PATH = "data/"
 
 STORAGE_FILENAME = "storage"
