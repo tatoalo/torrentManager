@@ -5,7 +5,6 @@ ENV PYTHONPATH="/root"
 COPY requirements.txt /
 COPY torrent-manager-cron /var/spool/cron/crontabs/root
 
-COPY configuration.toml /root
 COPY src/ /root/src/
 
 RUN apk add --update --no-cache python3 && \
