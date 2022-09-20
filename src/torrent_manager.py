@@ -25,6 +25,13 @@ class TorrentManager:
             password=self.config.password,
         )
         try:
+            qbt_client = qbittorrentapi.Client(
+                host=self.config.host,
+                port=self.config.port,
+                username=self.config.username,
+                password=self.config.password,
+            )
+
             qbt_client.auth_log_in()
         except Exception as e:
             match type(e):
