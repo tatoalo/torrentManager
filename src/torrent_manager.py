@@ -34,6 +34,7 @@ class TorrentManager:
             match type(e):
                 case qbittorrentapi.exceptions.APIConnectionError:
                     logging.error(f"Connection refused!")
+                    print(e)
                 case qbittorrentapi.exceptions.LoginFailed:
                     logging.error(f"Login failed!")
                 case _:
@@ -84,6 +85,11 @@ class TorrentManager:
             )
 
         return all_torrents_of_specified_category
+
+    def _load_storage(self) -> shelve.Shelf:
+        """
+        Create or load existing storage from `STORAGE_PATH`
+        """
         if not os.path.exists(STORAGE_PATH):
             logging.debug(f"Missing folder {STORAGE_PATH}, creating it...")
             os.mkdir(STORAGE_PATH)
@@ -249,3 +255,31 @@ class TorrentManager:
             self.client.torrents_set_upload_limit(limit=limit, torrent_hashes=hashes)
         logging.debug(f"imposed {limit_operation.value} limit of {limit} for {hashes}")
 
+    def clean_procedure(self, *, category: str) -> None:
+        """
+        Removing all torrents (metadata **and** files) in `completed` status for the specified category
+        """
+        logging.debug("\n---- cleaner ----")
+
+        logging.debug(f"cleaning {category}...")
+
+        status_of_torrents_to_be_retrieved = ["completed"]
+
+        completed_torrents_to_clean = self._retrieve_torrents_from_category(
+            category=category,
+            list_interested_statuses=status_of_torrents_to_be_retrieved,
+        )
+
+        if completed_torrents_to_clean:
+            hashes = [t.get("hash") for t in completed_torrents_to_clean]
+            file_names = [t.get("name") for t in completed_torrents_to_clean]
+
+            self.client.torrents_delete(torrent_hashes=hashes, delete_files=True)
+
+            logging.debug(f"{file_names} removed")
+
+        else:
+            logging.debug(f"No torrents to clean")
+
+        logging.debug("---- cleaner ----\n")
+        return category
