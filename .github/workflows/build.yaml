@@ -1,0 +1,22 @@
+name: build 👷‍♂️
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "**"
+      - "!main"
+    tags-ignore:
+      - "**"
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker build .
