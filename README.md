@@ -8,7 +8,7 @@
   </figure>
 
   # torrentManager  
-  Automagically 🪄 manage your qBittorent client.
+  🦄 Automagically 🪄 manage your qBittorent client.
     
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
 
