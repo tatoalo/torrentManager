@@ -1,2 +1,2 @@
-5 * * * * /usr/bin/python src/launcher.py
-# cron validity requirement
+10 * * * * /usr/bin/python src/launcher.py
+0 4 * * 6 /usr/bin/python src/cleaner.py
