@@ -50,15 +50,12 @@ class TorrentManager:
         logging.debug("\n---- watchdog ----")
 
         logging.debug(f"Looking at category {category}...")
-        status_of_torrents_to_be_retrieved = "downloading"
+        status_of_torrents_to_be_retrieved = ["downloading", "seeding"]
 
-        # retrieving `downloading` torrents
-        all_torrents_of_specified_category = [
-            {"hash": t.info.hash, "name": t.info.name}
-            for t in self.client.torrents_info(
-                category=category, status_filter=status_of_torrents_to_be_retrieved
-            )
-        ]
+        all_torrents_of_specified_category = self._retrieve_torrents_from_category(
+            category=category,
+            list_interested_statuses=status_of_torrents_to_be_retrieved,
+        )
 
         self._check_limits(torrents_dict=all_torrents_of_specified_category)
 
@@ -68,6 +65,25 @@ class TorrentManager:
 
         logging.debug("---- watchdog ----\n")
 
+    def _retrieve_torrents_from_category(
+        self, *, category: str, list_interested_statuses: list
+    ) -> list[dict]:
+        """
+        From a category and a list of statuses (e.g. 'downloading')
+        retrieve all the torrents as a list of dict with keys
+            * `hash`
+            * 'name'
+        """
+        all_torrents_of_specified_category = []
+        for interesting_status in list_interested_statuses:
+            all_torrents_of_specified_category.extend(
+                {"hash": t.info.hash, "name": t.info.name}
+                for t in self.client.torrents_info(
+                    category=category, status_filter=interesting_status
+                )
+            )
+
+        return all_torrents_of_specified_category
         if not os.path.exists(STORAGE_PATH):
             logging.debug(f"Missing folder {STORAGE_PATH}, creating it...")
             os.mkdir(STORAGE_PATH)
