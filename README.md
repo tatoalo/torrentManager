@@ -1,13 +1,13 @@
 <div align="center">
-<figure>
-  <img 
-  src="./assets/logo.jpg" 
-  width="350px">
-  <figcaption>The manager of the torrent is the bear 🐻, got it? 🥹</figcaption>
-</figure>
+  <figure>
+    <img 
+    src="./assets/logo.jpg" 
+    width="350px">
+    <br>
+    <figcaption>The manager of the torrent is the bear 🐻, got it? 🥹</figcaption>
+  </figure>
 
-  # torrentManager
-  
+  # torrentManager  
   Automagically 🪄 manage your qBittorent client.
     
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
