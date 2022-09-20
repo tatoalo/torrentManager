@@ -1,10 +1,9 @@
-from src import logging
 import os
 import sys
 
 import tomlkit
 
-from src import CONFIG_PATH
+from src import CONFIG_PATH, logging
 
 
 class TorrentConfiguration:
@@ -22,7 +21,7 @@ class TorrentConfiguration:
 
         self._load_configuration()
 
-    def _load_configuration(self):
+    def _load_configuration(self) -> None:
         """
         Loading toml configuration
 
@@ -41,7 +40,7 @@ class TorrentConfiguration:
         categories = ["cat", "cat2"]
 
         [targets]
-        dir_targets = { "cat" = "/home/lol", "cat2" = "/home/asd" }
+        dir_targets = { "cat" = "path", "cat2" = "path" }
         """
 
         if not os.path.exists(CONFIG_PATH):
@@ -76,3 +75,9 @@ class TorrentConfiguration:
                     logging.info(
                         f"Found section {section} in configuration file, skipping this since it wasn't expected..."
                     )
+
+    def _retrieve_categories(self) -> list:
+        """
+        Retrieve list of categories
+        """
+        return self.categories
