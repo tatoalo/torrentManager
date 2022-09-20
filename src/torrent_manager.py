@@ -17,13 +17,10 @@ class TorrentManager:
 
         self._check_categories_compliance()
 
-    def _create_client(self):
-        qbt_client = qbittorrentapi.Client(
-            host=self.config.host,
-            port=self.config.port,
-            username=self.config.username,
-            password=self.config.password,
-        )
+    def _create_client(self) -> qbittorrentapi.Client:
+        """
+        Create qbittorent client and test the connection to the instance
+        """
         try:
             qbt_client = qbittorrentapi.Client(
                 host=self.config.host,
@@ -46,8 +43,11 @@ class TorrentManager:
 
         return qbt_client
 
-    def add_to_watchdog(self, category: str = ""):
-        logging.debug("---- watchdog ----\n")
+    def add_to_watchdog(self, *, category: str = "") -> None:
+        """
+        Watchdog procedure for the specified category, torrents will be added to the storage
+        """
+        logging.debug("\n---- watchdog ----")
 
         logging.debug(f"Looking at category {category}...")
         status_of_torrents_to_be_retrieved = "downloading"
@@ -68,7 +68,6 @@ class TorrentManager:
 
         logging.debug("---- watchdog ----\n")
 
-    def _load_storage(self):
         if not os.path.exists(STORAGE_PATH):
             logging.debug(f"Missing folder {STORAGE_PATH}, creating it...")
             os.mkdir(STORAGE_PATH)
@@ -77,7 +76,10 @@ class TorrentManager:
 
         return s
 
-    def _populate_DB(self, torrents_list: list[dict]):
+    def _populate_DB(self, *, torrents_list: list[dict]) -> None:
+        """
+        Add torrents to the storage
+        """
         for torrent in torrents_list:
             torrent_hash = torrent["hash"]
             if not self._is_hash_already_been_loaded(hash=torrent_hash):
@@ -85,7 +87,10 @@ class TorrentManager:
                 self.storage[torrent_hash] = torrent_name
                 logging.debug(f"Storing {torrent_hash} | {torrent_name}")
 
-    def _is_hash_already_been_loaded(self, hash: str):
+    def _is_hash_already_been_loaded(self, *, hash: str) -> bool:
+        """
+        Check if a torrent has already been added to the storage
+        """
         try:
             # No need to waste variable space, GC will think about it :)
             self.storage[hash]
@@ -95,7 +100,11 @@ class TorrentManager:
             logging.debug(f"hash {hash} **needs** to be stored")
             return False
 
-    def check_status(self):
+    def check_status(self) -> None:
+        """
+        Check the status of all the stored torrents and if a torrent
+        has finished downloading, it will be paused
+        """
         hashes_to_check = ""
         hashes_stored = self.storage.keys()
         number_of_torrents = len(hashes_stored)
@@ -150,13 +159,22 @@ class TorrentManager:
                     f"{torrent_hash} ~ {torrent_category} is in status {torrent_current_status} | {torrent_progress} %"
                 )
 
-    def _pause_torrent(self, hash: str):
+    def _pause_torrent(self, *, hash: str) -> None:
+        """
+        Wrapper for pausing torrent via internal API call
+        """
         self.client.torrents_pause(torrent_hashes=hash)
 
-    def _remove_from_storage(self, hash: str):
+    def _remove_from_storage(self, *, hash: str) -> None:
+        """
+        Removing torrent from storage
+        """
         del self.storage[hash]
 
-    def _check_categories_compliance(self):
+    def _check_categories_compliance(self) -> None:
+        """
+        Checking compliance in terms of save path limits for all interested categories
+        """
         for category in self.config.categories:
             logging.debug(f"checking compliance for {category}")
             configuration_save_path_wanted = self.config.dir_targets[category]
@@ -172,11 +190,19 @@ class TorrentManager:
             else:
                 logging.debug(f"save_path for {category} is already compliant")
 
-    def _enforce_category_compliance(self, category: str, save_path_wanted: str):
+    def _enforce_category_compliance(
+        self, *, category: str, save_path_wanted: str
+    ) -> None:
+        """
+        Wrapper for editing the save path of a specific category
+        """
         self.client.torrents_edit_category(name=category, save_path=save_path_wanted)
         logging.debug(f"save path **changed** for {category} to {save_path_wanted}")
 
-    def _check_limits(self, torrents_dict: dict):
+    def _check_limits(self, *, torrents_dict: dict) -> None:
+        """
+        Checking compliance in terms of DL/UP limits for all interested categories
+        """
         download_limit = self.config.dl_limit
         upload_limit = self.config.up_limit
 
@@ -193,7 +219,12 @@ class TorrentManager:
                 limit=upload_limit,
             )
 
-    def _impose_limit(self, limit_operation: Limit, torrents_dict: dict, limit: int):
+    def _impose_limit(
+        self, *, limit_operation: Limit, torrents_dict: dict, limit: int
+    ) -> None:
+        """
+        Wrapper for enforcing DL/UP limits for torrents
+        """
         hashes = [t.get("hash") for t in torrents_dict]
 
         if limit_operation == Limit.DOWNLOAD_OPERATION:
@@ -201,3 +232,4 @@ class TorrentManager:
         elif limit_operation == Limit.UPLOAD_OPERATION:
             self.client.torrents_set_upload_limit(limit=limit, torrent_hashes=hashes)
         logging.debug(f"imposed {limit_operation.value} limit of {limit} for {hashes}")
+
