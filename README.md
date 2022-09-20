@@ -12,7 +12,7 @@
     
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F7ABOVF)
 
-  [![MIT](https://img.shields.io/github/license/tatoalo/torrentManager)](https://github.com/tatoalo/torrentManager) [![Docker Image Version](https://img.shields.io/docker/v/tatoalo/torrent-manager?sort=semver)][hub] [![Docker Image Size](https://img.shields.io/docker/image-size/tatoalo/torrent-manager)][hub]
+  [![Apache-2.0](https://img.shields.io/github/license/tatoalo/torrentManager)](https://github.com/tatoalo/torrentManager) [![Docker Image Version](https://img.shields.io/docker/v/tatoalo/torrent-manager?sort=semver)][hub] [![Docker Image Size](https://img.shields.io/docker/image-size/tatoalo/torrent-manager)][hub]
 
 [hub]: https://hub.docker.com/r/tatoalo/torrent-manager/
 </div>
