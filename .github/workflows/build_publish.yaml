@@ -1,9 +1,12 @@
 name: build image & publish 🚀
 
 on:
+  pull_request:
   push:
     branches:
       - main
+    tags:
+      - "**"
 
 jobs:
   build:
@@ -24,7 +27,6 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
