@@ -71,7 +71,7 @@ categories = ["cat", "cat2"]
 dir_targets = { "cat" = "path", "cat2" = "path" }
 ```
 
-### Custom Scheduling
+#### Custom Scheduling
 
 The default scheduling mechanism is stored in `torrent-manager-cron`, although a custom schedule can be introduced in one of two ways:
 
@@ -80,6 +80,20 @@ The default scheduling mechanism is stored in `torrent-manager-cron`, although a
 It is possible to just customize a single mechanism (`launcher` or `cleaner`) or even both in the same context, these are the env variables:
   - `LAUNCHER_CRON` for when the main launcher is executed
   - `CLEANER_CRON` for when the cleaning mechanism is executed
+
+Both variables are to be assigned a `cron`-valid schedule pattern.
+
+#### Monitoring
+
+Another couple of environment variables can be set in order to monitor the health of the cron jobs, namely:
+
+- `HC_UUID_LAUNCHER`
+- `HC_UUID_CLEANER`
+
+Their value must be an `healthchecks`-compatible `uuid` (or `slug`).
+I've been a fan of [cronitor](https://cronitor.io/) but [healtchecks](https://healthchecks.io/)'s free offering is more convenient in my opinion.
+
+Similarly to the [Custom Scheduling](#custom-scheduling), both environment variables can be set at the same time, you can decide to activate only one or not have monitoring in place at all, up to you :)
 
 ## License
 

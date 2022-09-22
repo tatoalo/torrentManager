@@ -9,7 +9,7 @@ COPY torrent-manager-cron /var/spool/cron/crontabs/root
 
 COPY src/ /root/src/
 
-RUN apk add --update --no-cache python3 && \
+RUN apk add --update --no-cache python3 curl tzdata && \
     rm -rf /var/cache/* && \
     mkdir /var/cache/apk && \
     ln -sf python3 /usr/bin/python && \
