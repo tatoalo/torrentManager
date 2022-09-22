@@ -34,13 +34,12 @@ class TorrentManager:
             match type(e):
                 case qbittorrentapi.exceptions.APIConnectionError:
                     logging.error(f"Connection refused!")
-                    print(e)
                 case qbittorrentapi.exceptions.LoginFailed:
                     logging.error(f"Login failed!")
                 case _:
                     logging.error(f"Exception thrown ; {type(e)}")
 
-            sys.exit()
+            sys.exit(1)
 
         return qbt_client
 
@@ -64,7 +63,7 @@ class TorrentManager:
         if all_torrents_of_specified_category:
             self._populate_DB(torrents_list=all_torrents_of_specified_category)
 
-        logging.debug("---- watchdog ----\n")
+        logging.debug("\n---- watchdog ----")
 
     def _retrieve_torrents_from_category(
         self, *, category: str, list_interested_statuses: list
