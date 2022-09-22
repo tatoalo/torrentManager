@@ -5,7 +5,7 @@ import sys
 import qbittorrentapi
 import qbittorrentapi.exceptions
 
-from src import STORAGE_FILENAME, STORAGE_PATH, Limit, logging
+from src import IGNORED_TRACKER_URLS, STORAGE_FILENAME, STORAGE_PATH, Limit, logging
 from torrent_configuration import TorrentConfiguration
 
 
@@ -64,6 +64,28 @@ class TorrentManager:
             self._populate_DB(torrents_list=all_torrents_of_specified_category)
 
         logging.debug("\n---- watchdog ----")
+
+    def check_trackers(self) -> None:
+        """
+        Check torrents who are currently without an assigned category,
+        if they have a tracker that has been mapped, assigned that tag to them.
+        """
+        mapping_trackers = self.config.trackers_tags
+        if mapping_trackers:
+            specified_categories = self.config.categories
+            for torrent in self.client.torrents_info():
+                current_category = torrent.category
+                current_tag = torrent.tags
+                if current_category not in specified_categories and not current_tag:
+                    trackers = torrent.trackers
+                    for tracker in trackers:
+                        tracker_url = tracker.get("url")
+                        if tracker_url and tracker_url not in IGNORED_TRACKER_URLS:
+                            self._assign_tag_to_torrent(
+                                torrent=torrent,
+                                tracker_url=tracker_url,
+                                mapping_trackers=specified_categories,
+                            )
 
     def _retrieve_torrents_from_category(
         self, *, category: str, list_interested_statuses: list
@@ -282,3 +304,20 @@ class TorrentManager:
 
         logging.debug("---- cleaner ----\n")
         return category
+
+    def _assign_tag_to_torrent(
+        self,
+        *,
+        torrent: qbittorrentapi.TorrentDictionary,
+        tracker_url: str,
+        mapping_trackers: dict,
+    ) -> None:
+        """
+        Wrapper for adding tag to torrent of a mapped tracker
+        """
+        for trackers_key, trackers_tag in mapping_trackers.items():
+            if trackers_key in tracker_url:
+                hash = torrent.hash
+                logging.debug(f"Assigning tracker tag {trackers_tag} to torrent {hash}")
+                self.client.torrents_add_tags(tags=trackers_tag, torrent_hashes=hash)
+                return

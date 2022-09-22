@@ -20,6 +20,7 @@
 torrentManager can be used to automatically perform operations like: 
 * stop seeding process once download of a specific tag or category has completed
 * remove torrents (metadata & files) of a specific tag or category group
+* attach a specific TAG to specific torrents (e.g. *private trackers*) 
 
 The core has been developed in a quick and easy manner, on purpose to be easily extendible, using the very well documented qBittorrent API.
 
@@ -50,7 +51,7 @@ services:
 
 ### Configuration
 
-The configuration file allows the authentication mechanism towards the qBittorrent instance, download/upload limits, interested categories and their respective save paths.
+The configuration file allows the authentication mechanism towards the qBittorrent instance, download/upload limits, interested categories and their respective save paths (**NOT** all paths are mandatory).
 
 ```toml
 [qbt]
@@ -69,6 +70,9 @@ categories = ["cat", "cat2"]
 
 [targets]
 dir_targets = { "cat" = "path", "cat2" = "path" }
+
+[trackers]
+trackers_tags = { "tracker_endpoint" = "tag" }
 ```
 
 #### Custom Scheduling
