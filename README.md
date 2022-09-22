@@ -99,6 +99,17 @@ I've been a fan of [cronitor](https://cronitor.io/) but [healtchecks](https://he
 
 Similarly to the [Custom Scheduling](#custom-scheduling), both environment variables can be set at the same time, you can decide to activate only one or not have monitoring in place at all, up to you :)
 
+#### Tagging Private Trackers
+
+In the `configuration.toml` file, a section `trackers` can be specified such as:
+
+```toml
+[trackers]
+trackers_tags = { "tracker_endpoint" = "tag" }
+```
+
+so that if a torrent is found to possess a tracker like `tracker.tracker_endpoint.forreal`, it will be tagged with `tag`.
+
 ## License
 
     Copyright 2022 Alessandro Pogliaghi
