@@ -71,6 +71,16 @@ categories = ["cat", "cat2"]
 dir_targets = { "cat" = "path", "cat2" = "path" }
 ```
 
+### Custom Scheduling
+
+The default scheduling mechanism is stored in `torrent-manager-cron`, although a custom schedule can be introduced in one of two ways:
+
+- Edit `torrent-manager-cron` accordingly and rebuild the image
+- Edit the environment variables directly in the `docker run` command or `docker compose` file, namely.
+It is possible to just customize a single mechanism (`launcher` or `cleaner`) or even both in the same context, these are the env variables:
+  - `LAUNCHER_CRON` for when the main launcher is executed
+  - `CLEANER_CRON` for when the cleaning mechanism is executed
+
 ## License
 
     Copyright 2022 Alessandro Pogliaghi

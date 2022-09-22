@@ -1,8 +1,10 @@
 FROM alpine:3.16
 
 ENV PYTHONPATH="/root"
+ENV TZ=Europe/Paris
 
 COPY requirements.txt /
+COPY --chmod=777 cron.sh /
 COPY torrent-manager-cron /var/spool/cron/crontabs/root
 
 COPY src/ /root/src/
@@ -15,4 +17,4 @@ RUN apk add --update --no-cache python3 && \
     pip3 install --no-cache --upgrade pip && \
     pip3 install -r requirements.txt
 
-CMD ["/usr/sbin/crond", "-f"]
+CMD [ "./cron.sh" ]
