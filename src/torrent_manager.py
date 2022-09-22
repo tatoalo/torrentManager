@@ -218,20 +218,24 @@ class TorrentManager:
         """
         Checking compliance in terms of save path limits for all interested categories
         """
-        for category in self.config.categories:
-            logging.debug(f"checking compliance for {category}")
-            configuration_save_path_wanted = self.config.dir_targets[category]
-            configuration_save_path_actual = self.client.torrents_categories()[
-                category
-            ]["savePath"]
+        if self.config.dir_targets:
+            for category in self.config.categories:
+                logging.debug(f"checking compliance for {category}")
+                configuration_save_path_wanted = self.config.dir_targets[category]
+                configuration_save_path_actual = self.client.torrents_categories()[
+                    category
+                ]["savePath"]
 
-            if configuration_save_path_actual != configuration_save_path_wanted:
-                logging.debug(f"save_path destination for {category} is not compliant")
-                self._enforce_category_compliance(
-                    category=category, save_path_wanted=configuration_save_path_wanted
-                )
-            else:
-                logging.debug(f"save_path for {category} is already compliant")
+                if configuration_save_path_actual != configuration_save_path_wanted:
+                    logging.debug(
+                        f"save_path destination for {category} is not compliant"
+                    )
+                    self._enforce_category_compliance(
+                        category=category,
+                        save_path_wanted=configuration_save_path_wanted,
+                    )
+                else:
+                    logging.debug(f"save_path for {category} is already compliant")
 
     def _enforce_category_compliance(
         self, *, category: str, save_path_wanted: str
