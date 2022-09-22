@@ -84,7 +84,7 @@ class TorrentManager:
                             self._assign_tag_to_torrent(
                                 torrent=torrent,
                                 tracker_url=tracker_url,
-                                mapping_trackers=specified_categories,
+                                mapping_trackers=mapping_trackers,
                             )
 
     def _retrieve_torrents_from_category(
