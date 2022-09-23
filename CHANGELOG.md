@@ -3,6 +3,15 @@
 ## [Unreleased]
 
 
+## [1.1.0] - 2022-02-23
+
+- Added private trackers logic 🕵️
+- Allowed flexible cron settings ⏳
+- Added support for cron monitoring 👀
+- Fixed CI/CD pipeline 👨‍🔧
+- Improved documentation 📜
+
+
 ## [0.1.2] - 2022-02-20
 
 Other CI issues fixed 🚧

@@ -19,6 +19,8 @@ class TorrentConfiguration:
         self.categories = []
         self.dir_targets = {}
 
+        self.trackers_tags = {}
+
         self._load_configuration()
 
     def _load_configuration(self) -> None:
@@ -41,11 +43,14 @@ class TorrentConfiguration:
 
         [targets]
         dir_targets = { "cat" = "path", "cat2" = "path" }
+
+        [trackers]
+        trackers_tags = { "tracker_endpoint" = "tag" }
         """
 
         if not os.path.exists(CONFIG_PATH):
             logging.error(f"Configuration file not found in path `{CONFIG_PATH}`")
-            sys.exit()
+            sys.exit(1)
 
         data = None
         with open(CONFIG_PATH, "rb") as f:
@@ -61,7 +66,7 @@ class TorrentConfiguration:
                         logging.error(
                             f"Wrong port defined, is it a valid number? {inner_section.get('port')}"
                         )
-                        sys.exit()
+                        sys.exit(1)
                     self.username = inner_section.get("username")
                     self.password = inner_section.get("password")
                 case "qbt_config":
@@ -71,6 +76,8 @@ class TorrentConfiguration:
                     self.categories = inner_section.get("categories")
                 case "targets":
                     self.dir_targets = inner_section.get("dir_targets")
+                case "trackers":
+                    self.trackers_tags = inner_section.get("trackers_tags")
                 case _:
                     logging.info(
                         f"Found section {section} in configuration file, skipping this since it wasn't expected..."

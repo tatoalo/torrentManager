@@ -11,4 +11,5 @@ if __name__ == "__main__":
     for category in t.config._retrieve_categories():
         t.add_to_watchdog(category=category)
 
+    t.check_trackers()
     t.check_status()

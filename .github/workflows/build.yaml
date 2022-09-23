@@ -10,13 +10,8 @@ on:
       - "**"
 
 jobs:
-  ubuntu:
+  build_docker:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: docker build .
+      - run: DOCKER_BUILDKIT=1 docker build .

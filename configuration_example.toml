@@ -14,3 +14,6 @@ categories = ["cat", "cat2"]
 
 [targets]
 dir_targets = { "cat" = "path", "cat2" = "path" }
+
+[trackers]
+trackers_tags = { "tracker_endpoint" = "tag" }
