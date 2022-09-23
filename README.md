@@ -51,7 +51,7 @@ services:
 
 ### Configuration
 
-The configuration file allows the authentication mechanism towards the qBittorrent instance, download/upload limits, interested categories and their respective save paths (**NOT** all paths are mandatory).
+The configuration file allows the authentication mechanism towards the qBittorrent instance, download/upload limits, interested categories and their respective save paths (**NOT** all sections are mandatory).
 
 ```toml
 [qbt]
