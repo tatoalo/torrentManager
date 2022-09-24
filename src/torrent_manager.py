@@ -4,6 +4,7 @@ import sys
 
 import qbittorrentapi
 import qbittorrentapi.exceptions
+from tenacity import after_log, retry, stop_after_attempt, wait_fixed
 
 from src import IGNORED_TRACKER_URLS, STORAGE_FILENAME, STORAGE_PATH, Limit, logging
 from torrent_configuration import TorrentConfiguration
@@ -109,15 +110,40 @@ class TorrentManager:
 
     def _load_storage(self) -> shelve.Shelf:
         """
-        Create or load existing storage from `STORAGE_PATH`
+        High-level wrapper for creating or loading storage, setup for
+        handling failed retry attempts
+        """
+        storage_location = STORAGE_PATH + STORAGE_FILENAME
+
+        try:
+            return self.__storage_low_level_operation(storage_location=storage_location)
+        except Exception as e:
+            if e.errno == 35:
+                logging.error(
+                    f"Could not access the data resource at {storage_location}"
+                )
+            else:
+                logging.error(f"Exception on loading storage {e}")
+
+            sys.exit(1)
+
+    @retry(
+        reraise=True,
+        wait=wait_fixed(20),
+        stop=stop_after_attempt(3),
+        after=after_log(logging, logging.DEBUG),
+    )
+    def __storage_low_level_operation(self, storage_location: str) -> shelve.Shelf:
+        """
+        Create or load storage in `storage_location` with a retry mechanism
+        I wait a fixed amount of seconds, with a certain amount of attempts in order
+        to avoid race conditions issue on the resource itself
         """
         if not os.path.exists(STORAGE_PATH):
             logging.debug(f"Missing folder {STORAGE_PATH}, creating it...")
             os.mkdir(STORAGE_PATH)
 
-        s = shelve.open(STORAGE_PATH + STORAGE_FILENAME)
-
-        return s
+        return shelve.open(storage_location)
 
     def _populate_DB(self, *, torrents_list: list[dict]) -> None:
         """
