@@ -2,8 +2,6 @@ name: build image & publish 🚀
 
 on:
   push:
-    branches:
-      - main
     tags:
       - "**"
 
