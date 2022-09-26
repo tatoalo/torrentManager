@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 
+## [1.1.2] - 2022-02-26
+
+- Fixed issue with never paused torrents in case of no active connections 🔌 ❌
+- Added support for connecting to remote hosts under custom domain 😁
+
+
 ## [1.1.1] - 2022-02-24
 
 - Fixed possible race condition on storage 🏎 🏁 ⌛️
@@ -32,6 +38,7 @@ Fixed CI issues 🐻 🪄 🦄 🚀
 Initial release 🐻 🪄 🦄 🚀
 
 
+[1.1.2]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.2
 [1.1.1]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.1
 [1.1.0]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.0
 [1.0.2]: https://github.com/tatoalo/torrentManager/releases/tag/1.0.2

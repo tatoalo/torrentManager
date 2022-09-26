@@ -203,8 +203,8 @@ class TorrentManager:
             torrent_progress = torrent.progress
             torrent_current_status = torrent.state_enum
 
-            # torrent has been completely downloaded
-            if not torrent_current_status.is_downloading:
+            # torrent has been completely downloaded or completed at 100%
+            if not torrent_current_status.is_downloading or torrent_progress > 1:
                 torrent_name = torrent.name
 
                 logging.debug(
