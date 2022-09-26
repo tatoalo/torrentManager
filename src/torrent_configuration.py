@@ -61,11 +61,20 @@ class TorrentConfiguration:
                 case "qbt":
                     self.host = inner_section.get("host")
                     try:
-                        self.port = int(inner_section.get("port"))
-                    except ValueError:
-                        logging.error(
-                            f"Wrong port defined, is it a valid number? {inner_section.get('port')}"
-                        )
+                        port = inner_section.get("port")
+                        if port:
+                            self.port = int(port)
+                    except Exception as e:
+                        match type(e):
+                            case ValueError.__class__:
+                                logging.error(
+                                    f"Wrong port defined, is it a valid number? {inner_section.get('port')}"
+                                )
+                            case TypeError.__class__:
+                                logging.error(f"Wrong port type defined with {e}")
+                            case _:
+                                logging.error(f"Exception thrown ; {type(e)}")
+
                         sys.exit(1)
                     self.username = inner_section.get("username")
                     self.password = inner_section.get("password")
