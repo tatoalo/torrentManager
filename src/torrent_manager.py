@@ -1,12 +1,20 @@
 import os
 import shelve
 import sys
+from datetime import datetime
 
 import qbittorrentapi
 import qbittorrentapi.exceptions
 from tenacity import after_log, retry, stop_after_attempt, wait_fixed
 
-from src import IGNORED_TRACKER_URLS, STORAGE_FILENAME, STORAGE_PATH, Limit, logging
+from src import (
+    IGNORED_TRACKER_URLS,
+    STORAGE_FILENAME,
+    STORAGE_PATH,
+    CLEANER_MINUTES_THRESHOLD,
+    Limit,
+    logging,
+)
 from torrent_configuration import TorrentConfiguration
 
 
@@ -89,22 +97,40 @@ class TorrentManager:
                             )
 
     def _retrieve_torrents_from_category(
-        self, *, category: str, list_interested_statuses: list
+        self,
+        *,
+        category: str,
+        list_interested_statuses: list,
+        cleaner_flow: bool = False,
     ) -> list[dict]:
         """
-        From a category and a list of statuses (e.g. 'downloading')
+        From a category and a list of statuses (e.g. `downloading`)
         retrieve all the torrents as a list of dict with keys
             * `hash`
-            * 'name'
+            * `name`
+            * `completed_at`
+
+        The `completed_at` key is present only when called from the `cleaner`.
         """
         all_torrents_of_specified_category = []
         for interesting_status in list_interested_statuses:
-            all_torrents_of_specified_category.extend(
-                {"hash": t.info.hash, "name": t.info.name}
-                for t in self.client.torrents_info(
-                    category=category, status_filter=interesting_status
+            for t in self.client.torrents_info(
+                category=category, status_filter=interesting_status
+            ):
+                tmp_dict = (
+                    {
+                        "hash": t.info.hash,
+                        "name": t.info.name,
+                        "completed_at": t.info.seen_complete,
+                    }
+                    if cleaner_flow
+                    else {
+                        "hash": t.info.hash,
+                        "name": t.info.name,
+                    }
                 )
-            )
+
+                all_torrents_of_specified_category.append(tmp_dict)
 
         return all_torrents_of_specified_category
 
@@ -319,16 +345,11 @@ class TorrentManager:
         completed_torrents_to_clean = self._retrieve_torrents_from_category(
             category=category,
             list_interested_statuses=status_of_torrents_to_be_retrieved,
+            cleaner_flow=True,
         )
 
         if completed_torrents_to_clean:
-            hashes = [t.get("hash") for t in completed_torrents_to_clean]
-            file_names = [t.get("name") for t in completed_torrents_to_clean]
-
-            self.client.torrents_delete(torrent_hashes=hashes, delete_files=True)
-
-            logging.debug(f"{file_names} removed")
-
+            self._remove_torrents(torrents_to_clean=completed_torrents_to_clean)
         else:
             logging.debug(f"No torrents to clean")
 
@@ -351,3 +372,26 @@ class TorrentManager:
                 logging.debug(f"Assigning tracker tag {trackers_tag} to torrent {hash}")
                 self.client.torrents_add_tags(tags=trackers_tag, torrent_hashes=hash)
                 return
+
+    def _remove_torrents(self, *, torrents_to_clean: dict) -> None:
+        """
+        Wrapper around `torrents_delete` for the removal of the torrent's metadata and files
+
+        Torrents with a time of completion which is >= than `CLEANER_MINUTES_THRESHOLD` will be removed.
+        """
+        current_time = datetime.now()
+        for torrent in torrents_to_clean:
+            torrent_name = torrent.get("name")
+            torrent_hash = torrent.get("hash")
+            torrent_completed_time = datetime.fromtimestamp(torrent.get("completed_at"))
+
+            diff_minutes = ((current_time - torrent_completed_time).seconds) / 60
+            logging.debug(
+                f"{torrent_name} has been completed on {torrent_completed_time} ~ {diff_minutes} minutes ago"
+            )
+
+            if diff_minutes >= CLEANER_MINUTES_THRESHOLD:
+                self.client.torrents_delete(
+                    torrent_hashes=torrent_hash, delete_files=True
+                )
+                logging.debug(f"Removed {torrent_name}")
