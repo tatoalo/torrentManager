@@ -3,18 +3,18 @@
 ## [Unreleased]
 
 
-## [1.1.2] - 2022-02-26
+## [1.1.2] - 2022-09-26
 
 - Fixed issue with never paused torrents in case of no active connections 🔌 ❌
 - Added support for connecting to remote hosts under custom domain 😁
 
 
-## [1.1.1] - 2022-02-24
+## [1.1.1] - 2022-09-24
 
 - Fixed possible race condition on storage 🏎 🏁 ⌛️
 
 
-## [1.1.0] - 2022-02-23
+## [1.1.0] - 2022-09-23
 
 - Added private trackers logic 🕵️
 - Allowed flexible cron settings ⏳
@@ -23,7 +23,7 @@
 - Improved documentation 📜
 
 
-## [1.0.2] - 2022-02-20
+## [1.0.2] - 2022-09-20
 
 Other CI issues fixed 🚧
 
