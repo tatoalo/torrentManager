@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.3] - 2022-10-22
+
+- Improved performance and behaviour of the cleaner 💪🏻
 
 
 ## [1.1.2] - 2022-09-26
@@ -38,6 +40,7 @@ Fixed CI issues 🐻 🪄 🦄 🚀
 Initial release 🐻 🪄 🦄 🚀
 
 
+[1.1.3]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.3
 [1.1.2]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.2
 [1.1.1]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.1
 [1.1.0]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.0
