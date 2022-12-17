@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:edge
 
 ENV PYTHONPATH="/root"
 ENV TZ=Europe/Paris
