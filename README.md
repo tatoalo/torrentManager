@@ -112,7 +112,7 @@ so that if a torrent is found to possess a tracker like `tracker.tracker_endpoin
 
 ## License
 
-    Copyright 2022 Alessandro Pogliaghi
+    Copyright 2023 Alessandro Pogliaghi
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
