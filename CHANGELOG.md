@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4] - 2022-12-17 🎅🏻🎄
+
+- 🏔️ Migrated to `edge` Alpine
+- 🐍 Added support for Python `3.11`
+- 🦦 Added support for qBittorent `4.5.0`
+
+
 ## [1.1.3] - 2022-10-22
 
 - 💪🏻 Improved performance and behaviour of the cleaner
@@ -40,6 +47,7 @@
 Initial release 🐻 🪄 🦄 🚀
 
 
+[1.1.4]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.4
 [1.1.3]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.3
 [1.1.2]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.2
 [1.1.1]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.1
