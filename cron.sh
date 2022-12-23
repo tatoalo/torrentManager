@@ -17,13 +17,13 @@ activate_crontab () {
 # Checking for HC_UUID_LAUNCHER
 if [[ "${HC_UUID_LAUNCHER}" ]]; then
     echo "** Capturing ID for monitoring launcher cron **"
-    LAUNCHER_COMMAND="${LAUNCHER_COMMAND} && curl -s https://hc-ping.com/${HC_UUID_LAUNCHER}/$? > /dev/null"
+    LAUNCHER_COMMAND="${LAUNCHER_COMMAND} && curl -sS --retry 2 -o /dev/null https://hc-ping.com/${HC_UUID_LAUNCHER}"
 fi
 
 # Checking for HC_UUID_CLEANER
 if [[ "${HC_UUID_CLEANER}" ]]; then
     echo "** Capturing ID for monitoring cleaner cron **"
-    CLEANER_COMMAND="${CLEANER_COMMAND} && curl -s https://hc-ping.com/${HC_UUID_CLEANER}/$? > /dev/null"
+    CLEANER_COMMAND="${CLEANER_COMMAND} && curl -sS --retry 2 -o /dev/null https://hc-ping.com/${HC_UUID_CLEANER}"
 fi
 
 # Checking for custom LAUNCHER_CRON

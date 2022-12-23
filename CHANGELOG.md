@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.5] - 2022-12-23 🎅🏻🎄🦌
+
+- ⏳ Changed `curl` construction
+
+
 ## [1.1.4] - 2022-12-17 🎅🏻🎄
 
 - 🏔️ Migrated to `edge` Alpine
@@ -47,6 +52,7 @@
 Initial release 🐻 🪄 🦄 🚀
 
 
+[1.1.5]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.5
 [1.1.4]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.4
 [1.1.3]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.3
 [1.1.2]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.2
