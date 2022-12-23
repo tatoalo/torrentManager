@@ -1,2 +1,2 @@
-*/10 * * * * /usr/bin/python src/launcher.py && curl -s https://hc-ping.com/${HC_UUID_LAUNCHER}/$? > /dev/null
-0 4 * * 6 /usr/bin/python src/cleaner.py && curl -s https://hc-ping.com/${HC_UUID_CLEANER}/$? > /dev/null
+*/10 * * * * /usr/bin/python src/launcher.py && curl -sS --retry 2 -o /dev/null https://hc-ping.com/${HC_UUID_LAUNCHER}
+0 4 * * 6 /usr/bin/python src/cleaner.py && curl -sS --retry 2 -o /dev/null https://hc-ping.com/${HC_UUID_CLEANER}
