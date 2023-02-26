@@ -5,6 +5,7 @@ from datetime import datetime
 
 import qbittorrentapi
 import qbittorrentapi.exceptions
+from qbittorrentapi import TorrentStates
 from tenacity import after_log, retry, stop_after_attempt, wait_fixed
 
 from src import (
@@ -230,7 +231,15 @@ class TorrentManager:
             torrent_current_status = torrent.state_enum
 
             # torrent has been completely downloaded or completed at 100%
-            if not torrent_current_status.is_downloading or torrent_progress > 1:
+            # if it's stalled, let's consider a progress of close to 100% as completed
+            if (
+                not torrent_current_status.is_downloading
+                or torrent_progress > 1
+                or (
+                    torrent_current_status == TorrentStates.STALLED_DOWNLOAD
+                    and torrent_progress > 0.99
+                )
+            ):
                 torrent_name = torrent.name
 
                 logging.debug(
@@ -334,13 +343,13 @@ class TorrentManager:
 
     def clean_procedure(self, *, category: str) -> None:
         """
-        Removing all torrents (metadata **and** files) in `completed` status for the specified category
+        Removing all torrents (metadata **and** files) in `completed` or `paused` status for the specified category
         """
         logging.debug("\n---- cleaner ----")
 
         logging.debug(f"cleaning {category}...")
 
-        status_of_torrents_to_be_retrieved = ["completed"]
+        status_of_torrents_to_be_retrieved = ["completed", "paused"]
 
         completed_torrents_to_clean = self._retrieve_torrents_from_category(
             category=category,
