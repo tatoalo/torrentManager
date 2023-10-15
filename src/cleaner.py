@@ -9,3 +9,5 @@ if __name__ == "__main__":
 
     for category in t.config._retrieve_categories():
         t.clean_procedure(category=category)
+
+    t.resolve_data_discrepancies()

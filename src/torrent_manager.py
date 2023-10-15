@@ -404,3 +404,54 @@ class TorrentManager:
                     torrent_hashes=torrent_hash, delete_files=True
                 )
                 logging.debug(f"Removed {torrent_name}")
+
+    def resolve_data_discrepancies(self) -> None:
+        """
+        Resolves discrepancies (`Cleaner` workflow) between our source of truth (local storage) and the external client.
+
+        If torrents are not to be found anymore from the client, we can clean the references in the storage,
+        avoiding wasting disk space.
+        """
+        hashes_storage_discrepancy: list = self._retrieve_hashes_stored_not_in_client()
+
+        if hashes_storage_discrepancy:
+            for hash_to_be_removed in hashes_storage_discrepancy:
+                name_to_be_removed = self.storage[hash_to_be_removed]
+                logging.debug(
+                    f"Removing [{hash_to_be_removed} | {name_to_be_removed}]..."
+                )
+                self._remove_from_storage(hash=hash_to_be_removed)
+        else:
+            logging.debug("No discrepancies found.")
+            return
+
+        logging.debug(f"Resolved {len(hashes_storage_discrepancy)} discrepancies.")
+
+    def _retrieve_hashes_stored_not_in_client(self) -> list:
+        """
+        Retrieves a list populated by hashes of torrents that are found in storage
+        but not present in the client anymore.
+
+        If no discrepancy is exposed or no torrents are currently stored, returning list is empty
+        """
+        hashes_discrepancy: list = []
+        hashes_stored = self.storage.keys()
+        number_of_torrents_stored = len(hashes_stored)
+
+        if number_of_torrents_stored >= 1:
+            for hash_torrent_stored in hashes_stored:
+                result = self.client.torrents_info(torrent_hashes=hash_torrent_stored)
+                if result:
+                    pass
+                else:
+                    name_torrent_stored = self.storage.get(hash_torrent_stored)
+                    logging.debug(
+                        f"[{hash_torrent_stored} | {name_torrent_stored}] **NOT** found in client, discrepancy exposed!"
+                    )
+                    hashes_discrepancy.append(hash_torrent_stored)
+        else:
+            logging.debug(
+                "No torrents stored at the moment, no discrepancies possible."
+            )
+
+        return hashes_discrepancy
