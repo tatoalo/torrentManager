@@ -2,7 +2,7 @@ from src import logging
 from src.torrent_manager import TorrentManager
 
 
-def synch_storage(*, manager: TorrentManager) -> None:
+def sync_storage(*, manager: TorrentManager) -> None:
     logging.info("Synching storage...")
     try:
         manager.storage.close()
