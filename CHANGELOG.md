@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7] - 2023-10-15
+
+- 🧹 `Cleaner` now automatically resolves data inconsistencies
+- 🦦 Added support for qBittorent `4.5.5`
+- 🧪 Updated other dependencies
+- 🐍 Fixed `externally-managed-environment` error Docker image
+
 ## [1.1.6] - 2023-02-26
 
 - 🚫 Handling of stalled download torrents when close to completion
@@ -48,6 +55,7 @@
 
 Initial release 🐻 🪄 🦄 🚀
 
+[1.1.7]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.7
 [1.1.6]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.6
 [1.1.5]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.5
 [1.1.4]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.4
