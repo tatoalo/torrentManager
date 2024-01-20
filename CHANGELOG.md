@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.8] - 2024-12-20
+
+- 🦦 Added support for qBittorent `4.6.3`
+- 🧪 Updated other dependencies
+
 ## [1.1.7] - 2023-10-15
 
 - 🧹 `Cleaner` now automatically resolves data inconsistencies
@@ -55,6 +60,7 @@
 
 Initial release 🐻 🪄 🦄 🚀
 
+[1.1.8]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.8
 [1.1.7]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.7
 [1.1.6]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.6
 [1.1.5]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.5
