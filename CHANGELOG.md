@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.1.8] - 2024-12-20
+## [1.1.9] - 2024-04-14
+
+- 🦦 Added support for qBittorent `4.6.4`
+- 🏔️ Using to `3.19` Alpine
+- 🧪 Updated other dependencies
+
+## [1.1.8] - 2024-01-20
 
 - 🦦 Added support for qBittorent `4.6.3`
 - 🧪 Updated other dependencies
@@ -60,6 +66,7 @@
 
 Initial release 🐻 🪄 🦄 🚀
 
+[1.1.9]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.9
 [1.1.8]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.8
 [1.1.7]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.7
 [1.1.6]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.6
