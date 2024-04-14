@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:3.19
 
 ARG PYTHON_VERSION=3.11
 
