@@ -37,12 +37,7 @@ class TorrentManager:
                 port=self.config.port,
                 username=self.config.username,
                 password=self.config.password,
-                EXTRA_HEADERS={
-                    "Cookie": "auth_tatoalo_session=IPjHw8o*mISFBR%kZturfCcoeWD-THLn;SID=/6eIBZg2TvC8qFjSbSb/9oyfY3HAHrli"
-                },
             )
-
-            # qbt_client = Client(..., EXTRA_HEADERS={'X-My-Fav-Header': 'header value')
 
             qbt_client.auth_log_in()
         except Exception as e:
