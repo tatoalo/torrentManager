@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0] - 2024-09-28
+
+- 🦦 Added support for qBittorent `4.6.7`
+- 🛑 Using `torrents_stop` for pausing torrents, fixing torrents not being in the correct state after having finished downloading
+- 🧪 Updated other dependencies
+
 ## [1.1.9] - 2024-04-14
 
 - 🦦 Added support for qBittorent `4.6.4`
@@ -66,6 +72,7 @@
 
 Initial release 🐻 🪄 🦄 🚀
 
+[1.2.0]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.0
 [1.1.9]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.9
 [1.1.8]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.8
 [1.1.7]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.7
