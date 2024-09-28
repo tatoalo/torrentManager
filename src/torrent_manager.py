@@ -37,7 +37,12 @@ class TorrentManager:
                 port=self.config.port,
                 username=self.config.username,
                 password=self.config.password,
+                EXTRA_HEADERS={
+                    "Cookie": "auth_tatoalo_session=IPjHw8o*mISFBR%kZturfCcoeWD-THLn;SID=/6eIBZg2TvC8qFjSbSb/9oyfY3HAHrli"
+                },
             )
+
+            # qbt_client = Client(..., EXTRA_HEADERS={'X-My-Fav-Header': 'header value')
 
             qbt_client.auth_log_in()
         except Exception as e:
@@ -267,7 +272,7 @@ class TorrentManager:
         """
         Wrapper for pausing torrent via internal API call
         """
-        self.client.torrents_pause(torrent_hashes=hash)
+        self.client.torrents_stop(torrent_hashes=hash)
 
     def _remove_from_storage(self, *, hash: str) -> None:
         """
