@@ -267,7 +267,7 @@ class TorrentManager:
         """
         Wrapper for pausing torrent via internal API call
         """
-        self.client.torrents_pause(torrent_hashes=hash)
+        self.client.torrents_stop(torrent_hashes=hash)
 
     def _remove_from_storage(self, *, hash: str) -> None:
         """
