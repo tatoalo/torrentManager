@@ -11,4 +11,5 @@ if __name__ == "__main__":
         t.add_to_watchdog(category=category)
 
     t.check_trackers()
+    t.apply_share_limits()
     t.check_status()

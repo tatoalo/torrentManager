@@ -16,7 +16,7 @@ from src import (
     Limit,
     logging,
 )
-from torrent_configuration import TorrentConfiguration
+from torrent_configuration import ShareLimitRule, TorrentConfiguration
 
 
 class TorrentManager:
@@ -96,6 +96,41 @@ class TorrentManager:
                                 tracker_url=tracker_url,
                                 mapping_trackers=mapping_trackers,
                             )
+
+    def apply_share_limits(self) -> None:
+        """
+        Apply qBittorrent share limits to torrents matched by tag or tracker rules.
+        """
+        share_limit_rules = self.config.share_limits
+        if not share_limit_rules:
+            return
+
+        torrents = self.client.torrents_info()
+        tracker_cache = {}
+
+        for rule in share_limit_rules:
+            hashes = [
+                torrent.hash
+                for torrent in torrents
+                if self._torrent_matches_share_limit_rule(
+                    torrent=torrent,
+                    rule=rule,
+                    tracker_cache=tracker_cache,
+                )
+            ]
+
+            if not hashes:
+                logging.debug(f"No torrents matched share limit rule `{rule.name}`")
+                continue
+
+            self.client.torrents_set_share_limits(
+                ratio_limit=rule.ratio_limit,
+                seeding_time_limit=rule.seeding_time_limit,
+                inactive_seeding_time_limit=rule.inactive_seeding_time_limit,
+                share_limit_action=rule.share_limit_action,
+                torrent_hashes=hashes,
+            )
+            logging.debug(f"Applied share limit rule `{rule.name}` to {hashes}")
 
     def _retrieve_torrents_from_category(
         self,
@@ -246,6 +281,16 @@ class TorrentManager:
                     f"torrent {torrent_name} ~ {torrent_category} has finished downloading!"
                 )
 
+                if self._torrent_matches_share_limit_rule(torrent=torrent):
+                    logging.debug(
+                        f"torrent {torrent_name} ~ {torrent_category} is managed by share limits"
+                    )
+                    self._remove_from_storage(hash=torrent_hash)
+                    logging.debug(
+                        f"deleted {torrent_hash}, {len(self.storage)} torrents left in storage"
+                    )
+                    continue
+
                 self._pause_torrent(hash=torrent_hash)
 
                 logging.debug(
@@ -341,6 +386,92 @@ class TorrentManager:
             self.client.torrents_set_upload_limit(limit=limit, torrent_hashes=hashes)
         logging.debug(f"imposed {limit_operation.value} limit of {limit} for {hashes}")
 
+    def _torrent_matches_share_limit_rule(
+        self,
+        *,
+        torrent: qbittorrentapi.TorrentDictionary,
+        rule: ShareLimitRule | None = None,
+        tracker_cache: dict | None = None,
+    ) -> bool:
+        """
+        Check whether a torrent matches a configured share limit rule.
+
+        Tags inside one rule are OR'd, trackers inside one rule are OR'd, and if a
+        rule defines both selectors then both groups must match.
+        """
+        rules = [rule] if rule else self.config.share_limits
+        if not rules:
+            return False
+
+        for share_limit_rule in rules:
+            if self._torrent_matches_single_share_limit_rule(
+                torrent=torrent,
+                rule=share_limit_rule,
+                tracker_cache=tracker_cache,
+            ):
+                return True
+
+        return False
+
+    def _torrent_matches_single_share_limit_rule(
+        self,
+        *,
+        torrent: qbittorrentapi.TorrentDictionary,
+        rule: ShareLimitRule,
+        tracker_cache: dict | None,
+    ) -> bool:
+        tag_match = True
+        if rule.tags:
+            torrent_tags = self._retrieve_torrent_tags(torrent=torrent)
+            tag_match = any(tag in torrent_tags for tag in rule.tags)
+
+        tracker_match = True
+        if rule.trackers:
+            tracker_urls = self._retrieve_torrent_tracker_urls(
+                torrent=torrent,
+                tracker_cache=tracker_cache,
+            )
+            tracker_match = any(
+                tracker in tracker_url
+                for tracker in rule.trackers
+                for tracker_url in tracker_urls
+            )
+
+        return tag_match and tracker_match
+
+    def _retrieve_torrent_tags(
+        self, *, torrent: qbittorrentapi.TorrentDictionary
+    ) -> set[str]:
+        tags = torrent.tags
+        if isinstance(tags, str):
+            return {tag.strip() for tag in tags.split(",") if tag.strip()}
+
+        try:
+            return {tag.strip() for tag in tags if tag.strip()}
+        except TypeError:
+            return set()
+
+    def _retrieve_torrent_tracker_urls(
+        self,
+        *,
+        torrent: qbittorrentapi.TorrentDictionary,
+        tracker_cache: dict | None,
+    ) -> list[str]:
+        torrent_hash = torrent.hash
+        if tracker_cache is not None and torrent_hash in tracker_cache:
+            return tracker_cache[torrent_hash]
+
+        tracker_urls = [
+            tracker.get("url")
+            for tracker in torrent.trackers
+            if tracker.get("url") and tracker.get("url") not in IGNORED_TRACKER_URLS
+        ]
+
+        if tracker_cache is not None:
+            tracker_cache[torrent_hash] = tracker_urls
+
+        return tracker_urls
+
     def clean_procedure(self, *, category: str) -> None:
         """
         Removing all torrents (metadata **and** files) in `completed` or `paused` status for the specified category
@@ -389,6 +520,7 @@ class TorrentManager:
         Torrents with a time of completion which is >= than `CLEANER_MINUTES_THRESHOLD` will be removed.
         """
         current_time = datetime.now()
+        tracker_cache = {}
         for torrent in torrents_to_clean:
             torrent_name = torrent.get("name")
             torrent_hash = torrent.get("hash")
@@ -399,11 +531,35 @@ class TorrentManager:
                 f"{torrent_name} has been completed on {torrent_completed_time} ~ {diff_minutes} minutes ago"
             )
 
+            if self._stored_torrent_matches_share_limit_rule(
+                hash=torrent_hash,
+                tracker_cache=tracker_cache,
+            ):
+                logging.debug(
+                    f"{torrent_name} is managed by share limits, skipping cleaner"
+                )
+                continue
+
             if diff_minutes >= CLEANER_MINUTES_THRESHOLD:
                 self.client.torrents_delete(
                     torrent_hashes=torrent_hash, delete_files=True
                 )
                 logging.debug(f"Removed {torrent_name}")
+
+    def _stored_torrent_matches_share_limit_rule(
+        self, *, hash: str, tracker_cache: dict | None = None
+    ) -> bool:
+        if not self.config.share_limits:
+            return False
+
+        torrents = self.client.torrents_info(torrent_hashes=hash)
+        return any(
+            self._torrent_matches_share_limit_rule(
+                torrent=torrent,
+                tracker_cache=tracker_cache,
+            )
+            for torrent in torrents
+        )
 
     def resolve_data_discrepancies(self) -> None:
         """

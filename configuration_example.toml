@@ -17,3 +17,12 @@ dir_targets = { "cat" = "path", "cat2" = "path" }
 
 [trackers]
 trackers_tags = { "tracker_endpoint" = "tag" }
+
+[[share_limits]]
+name = "private tracker"
+tags = ["tag"]
+trackers = ["tracker_endpoint"]
+ratio_limit = 2.0
+seeding_time_limit = 10080
+inactive_seeding_time_limit = -2
+share_limit_action = "RemoveWithContent"
