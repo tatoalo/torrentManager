@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.3] - 2026-05-08
+
+- Added share limit rules for applying qBittorrent ratio and seeding-time limits by tag or tracker
+- Share-limited torrents now take priority over torrentManager's automatic pause and cleaner deletion flows
+- Documented share limit rule configuration
+
 ## [1.2.2] - 2026-05-08
 
 - 🦦 Added support for qBittorrent `5.2.0`
@@ -81,6 +87,7 @@
 
 Initial release 🐻 🪄 🦄 🚀
 
+[1.2.3]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.3
 [1.2.2]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.2
 [1.2.1]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.1
 [1.2.0]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.0
