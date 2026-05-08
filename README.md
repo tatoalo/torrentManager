@@ -21,6 +21,7 @@ torrentManager can be used to automatically perform operations like:
 * stop seeding process once download of a specific tag or category has completed
 * remove torrents (metadata & files) of a specific tag or category group
 * attach a specific TAG to specific torrents (e.g. *private trackers*) 
+* apply qBittorrent ratio and seeding-time limits to torrents by tag or tracker
 
 The core has been developed in a quick and easy manner, on purpose to be easily extendible, using the very well documented qBittorrent API.
 
@@ -73,6 +74,15 @@ dir_targets = { "cat" = "path", "cat2" = "path" }
 
 [trackers]
 trackers_tags = { "tracker_endpoint" = "tag" }
+
+[[share_limits]]
+name = "private tracker"
+tags = ["tag"]
+trackers = ["tracker_endpoint"]
+ratio_limit = 2.0
+seeding_time_limit = 10080
+inactive_seeding_time_limit = -2
+share_limit_action = "RemoveWithContent"
 ```
 
 #### Custom Scheduling
@@ -109,6 +119,32 @@ trackers_tags = { "tracker_endpoint" = "tag" }
 ```
 
 so that if a torrent is found to possess a tracker like `tracker.tracker_endpoint.forreal`, it will be tagged with `tag`.
+
+#### Share Limit Rules
+
+Share limit rules apply qBittorrent's per-torrent seeding limits to torrents matched by tag, tracker, or both.
+
+```toml
+[[share_limits]]
+name = "private tracker"
+tags = ["tag"]
+trackers = ["tracker_endpoint"]
+ratio_limit = 2.0
+seeding_time_limit = 10080
+inactive_seeding_time_limit = -2
+share_limit_action = "RemoveWithContent"
+```
+
+Within one rule, multiple `tags` are matched as OR conditions and multiple `trackers` are matched as OR conditions. If both selector groups are present, a torrent must match both groups. Tracker selectors are substring matches against qBittorrent tracker URLs. Rules are applied in file order, so a later matching rule can overwrite values from an earlier matching rule.
+
+Torrents matched by a share limit rule are skipped by torrentManager's automatic pause and cleaner deletion flows. This lets qBittorrent enforce the configured ratio or seed-time rule first. Use `share_limit_action = "RemoveWithContent"` when the share limit rule should delete the torrent and its files after the limit is reached.
+
+The supported share limit values mirror qBittorrent:
+
+- `ratio_limit`: max seed ratio; `-2` uses the global value and `-1` disables the ratio limit.
+- `seeding_time_limit`: minutes to seed; `-2` uses the global value and `-1` disables the time limit.
+- `inactive_seeding_time_limit`: inactive minutes; `-2` uses the global value and `-1` disables the inactive time limit.
+- `share_limit_action`: one of `Stop`, `Remove`, `RemoveWithContent`, or `EnableSuperSeeding`.
 
 ## License
 
