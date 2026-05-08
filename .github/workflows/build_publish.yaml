@@ -2,46 +2,102 @@ name: build image & publish 🚀
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "**"
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Determine release version
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME}"
+          else
+            VERSION="$(grep -m1 -E '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | sed -E 's/^## \[([^]]+)\].*/\1/')"
+          fi
+
+          if [[ -z "${VERSION}" ]]; then
+            echo "Could not determine release version" >&2
+            exit 1
+          fi
+
+          IFS=. read -r MAJOR MINOR PATCH <<< "${VERSION}"
+          if [[ -z "${MAJOR}" || -z "${MINOR}" || -z "${PATCH}" ]]; then
+            echo "Release version must be semver: ${VERSION}" >&2
+            exit 1
+          fi
+
+          RELEASE_STATUS="$(curl -sS -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${VERSION}")"
+
+          if [[ "${RELEASE_STATUS}" == "200" ]]; then
+            echo "Release ${VERSION} already exists; skipping publish."
+            SKIP=true
+          elif [[ "${RELEASE_STATUS}" == "404" ]]; then
+            SKIP=false
+          else
+            echo "Could not check release ${VERSION}; GitHub API returned ${RELEASE_STATUS}" >&2
+            exit 1
+          fi
+
+          {
+            echo "skip=${SKIP}"
+            echo "version=${VERSION}"
+            echo "major=${MAJOR}"
+            echo "major_minor=${MAJOR}.${MINOR}"
+          } >> "${GITHUB_OUTPUT}"
 
       - name: Retrieve Docker Meta
         id: meta
-        uses: docker/metadata-action@v4
+        if: steps.release.outputs.skip != 'true'
+        uses: docker/metadata-action@v6.0.0
         with:
           images: |
             tatoalo/torrent-manager
             ghcr.io/tatoalo/torrent-manager
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=raw,value=${{ steps.release.outputs.version }}
+            type=raw,value=${{ steps.release.outputs.major_minor }}
+            type=raw,value=${{ steps.release.outputs.major }}
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        if: steps.release.outputs.skip != 'true'
+        uses: docker/setup-buildx-action@v4.0.0
 
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        if: steps.release.outputs.skip != 'true'
+        uses: docker/login-action@v4.1.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GHCR
-        uses: docker/login-action@v2
+        if: steps.release.outputs.skip != 'true'
+        uses: docker/login-action@v4.1.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v3
+        if: steps.release.outputs.skip != 'true'
+        uses: docker/build-push-action@v7.1.0
         with:
           context: .
           push: true
@@ -50,15 +106,54 @@ jobs:
 
       - name: Extract release notes
         id: extract-release-notes
-        uses: ffurrer2/extract-release-notes@v1
+        if: steps.release.outputs.skip != 'true'
+        uses: ffurrer2/extract-release-notes@v3.1.0
+
+      - name: Write release notes
+        if: steps.release.outputs.skip != 'true'
+        env:
+          RELEASE_NOTES: ${{ steps.extract-release-notes.outputs.release_notes }}
+        run: printf '%s' "${RELEASE_NOTES}" > release-notes.md
 
       - name: Create release
-        uses: actions/create-release@v1
+        if: steps.release.outputs.skip != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: false
-          prerelease: false
-          body: ${{ steps.extract-release-notes.outputs.release_notes }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          release_version = os.environ["RELEASE_VERSION"]
+          payload = json.dumps(
+              {
+                  "tag_name": release_version,
+                  "target_commitish": os.environ["GITHUB_SHA"],
+                  "name": release_version,
+                  "body": open("release-notes.md", encoding="utf-8").read(),
+                  "draft": False,
+                  "prerelease": False,
+              }
+          ).encode("utf-8")
+
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/releases",
+              data=payload,
+              headers={
+                  "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+                  "Accept": "application/vnd.github+json",
+                  "Content-Type": "application/json",
+              },
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(request) as response:
+                  print(f"Created release {release_version}: HTTP {response.status}")
+          except urllib.error.HTTPError as error:
+              print(error.read().decode("utf-8"))
+              raise
+          PY
