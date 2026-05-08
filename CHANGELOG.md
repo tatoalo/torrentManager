@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2] - 2026-05-08
+
+- 🦦 Added support for qBittorrent `5.2.0`
+- 🏔️ Migrated to `3.23` Alpine
+- 🐍 Added support for Python `3.12`
+- 🧪 Updated other dependencies
+- 🚀 Publish a release automatically when changes land on `main`
+
 ## [1.2.1] - 2024-09-28
 
 - 👨‍🔧 Fixed stored cookie issue
@@ -73,7 +81,9 @@
 
 Initial release 🐻 🪄 🦄 🚀
 
-[1.2.0]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.1
+[1.2.2]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.2
+[1.2.1]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.1
+[1.2.0]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.0
 [1.1.9]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.9
 [1.1.8]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.8
 [1.1.7]: https://github.com/tatoalo/torrentManager/releases/tag/1.1.7
