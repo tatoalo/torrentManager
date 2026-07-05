@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.4] - 2026-07-05
+
+- Updated dependency pins, including `qbittorrent-api` and `tomlkit`
+- Migrated Docker image to Alpine `3.24` and Python `3.14`
+- Updated GitHub Actions used for Docker build and publish workflows
+
 ## [1.2.3] - 2026-05-08
 
 - Added share limit rules for applying qBittorrent ratio and seeding-time limits by tag or tracker
@@ -87,6 +93,7 @@
 
 Initial release 🐻 🪄 🦄 🚀
 
+[1.2.4]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.4
 [1.2.3]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.3
 [1.2.2]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.2
 [1.2.1]: https://github.com/tatoalo/torrentManager/releases/tag/1.2.1
