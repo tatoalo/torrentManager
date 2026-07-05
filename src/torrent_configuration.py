@@ -7,7 +7,6 @@ import tomlkit
 
 from src import CONFIG_PATH, logging
 
-
 SUPPORTED_SHARE_LIMIT_ACTIONS = {
     "Stop",
     "Remove",
